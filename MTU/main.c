@@ -44,7 +44,7 @@ typedef struct bfsNode {
     
 } nodeBfs;
 
-long int max;
+int max;
 
 int acc[MAX];
 
@@ -56,17 +56,25 @@ char line[MAXS];
 
 char *spaceEater(void);
 
+void graphBuilder(void);
+
+int charParser(char *string);
+
 //-----main
 
 int main(void) {
     
-    
+    int a;
+    scanf("%s", line);
+    a = charParser(line);
+    printf("%d", a);
     
     return 0;
 }
 
 //-----function
 
+//function that clar from the read line space and if the line it's void it jump from the first useful line
 char *spaceEater(){
     
     char i;
@@ -85,7 +93,34 @@ char *spaceEater(){
     return line;
 }
 
+//function that found a char in the given string and return it
+int charParser(char *string){
+    
+    int trad;
+    char integer[10];
+    int c = 0;
+    while(c != -1){
+    
+        if(string[c] >= '0' && string[c] <= '9' ){
+            
+            integer[c] = string[c];
+            c++;
+        }else {
+            c = -1;
+        }
+        
+    
+    }
+    trad = (int) strtol(integer, (char **)NULL, 10);
+    
+    return trad;
+}
+
+
+
+//function that create the graph of the NTM using the given transictions
 void graphBuilder(){
+    
     
     
 }
