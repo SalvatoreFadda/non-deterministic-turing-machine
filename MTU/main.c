@@ -13,7 +13,6 @@
 #define MAX 100
 #define MAXS 2000
 #define START 400
-#define LAST 1999
 
 
 //-----global declaration
@@ -84,22 +83,26 @@ int main(void) {
     line = (char*)malloc(sizeof(char)*MAXS);
     
     spaceEater();
-    if(strcmp(line,"tr")){
+    if(strcmp(line,"tr") == 0){
         
+        printf("\n TR: %s \n", line);
         spaceEater();
-        while (!strcmp(line,"acc")) {
+        while (strcmp(line,"acc") != 0) {
             
+            printf("\n %s \n", line);
             graphBuilder();
             spaceEater();
             
         }
         
-        if(strcmp(line,"acc")){
+        if(strcmp(line,"acc") == 0){
             
+            printf("\n ACC: %s \n", line);
             int c = 0;
             spaceEater();
-            while (!strcmp(line,"max")) {
+            while (strcmp(line,"max") != 0) {
                 
+                printf("\n %s \n", line);
                 acc[c] = charParser(line, 1);
                 spaceEater();
                 c++;
@@ -109,18 +112,22 @@ int main(void) {
             
         }
         
-        if(strcmp(line,"max")){
+        if(strcmp(line,"max") == 0){
             
+            printf("\n MAX: %s \n", line);
             spaceEater();
+            printf("\n %s \n", line);
             max = charParser(line, 1);
             
         }
         spaceEater();
-        if(strcmp(line,"run")){
+        if(strcmp(line,"run") == 0){
             
+            printf("\n RUN: %s \n", line);
             char res;
             int end = 0;
             while(end == 0){
+                
                 
                 end = spaceEater();
                 //sostituire in maniera che la tape diventi dinamica
@@ -154,8 +161,7 @@ int main(void) {
 //function that clar from the read line space and if the line it's void it jump from the first useful line
 int spaceEater(){
     
-    free(line);
-    line = (char*)malloc(sizeof(char)*MAXS);
+    memset(line,0,strlen(line));
     char i;
     int c = 0;
     scanf("%c", &i);
@@ -270,11 +276,10 @@ void graphBuilder(){
                     }
             
             }
-        
+            c++;
             if(line[c] == '\0'){
                 c = -1;
             }
-            c++;
         
         }
     if(first < last){
@@ -319,7 +324,7 @@ char bfsFun(){
     currNode1 = node;
     while(level <= max){
         
-        while(currNode1 == NULL){
+        while(currNode1 != NULL){
         
             int accett = 0;
             stop = arrayNode[currNode1->currState]->lastInsert + 1;
@@ -356,7 +361,7 @@ char bfsFun(){
                 addCoda( &currNode2, &headNode2/*deve puntare alla testa della lista*/, newTape, newHead, arc->last->numberState, c);
                         
                     }else {
-                        addCoda( &currNode2, NULL/*deve puntare alla testa della lista*/, newTape, newHead, arc->last->numberState, c);
+                        addCoda( &currNode2, NULL, newTape, newHead, arc->last->numberState, c);
                     }
                 
                 }
@@ -381,7 +386,8 @@ char bfsFun(){
             res = '0';
             return res;
         }
-        headNode2 = currNode1;
+        currNode1 = headNode2;
+        headNode2 = NULL;
         preNode1 = NULL;
         currNode2 = NULL;
         level++;
