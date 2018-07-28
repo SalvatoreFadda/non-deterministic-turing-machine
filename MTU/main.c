@@ -16,11 +16,10 @@
 
 //-----global declaration
 
-typedef enum {R,L,S} move;
 
 typedef struct graphArc {
     
-    move move;
+    char move;
     char toRead;
     char toWrite;
     struct graphNode *first;
@@ -28,19 +27,23 @@ typedef struct graphArc {
     
 } arcGraph;
 
+
 typedef struct graphNode {
     
     int numberState;
+    int lastInsert;
     arcGraph *extArc[MAX];
     
 } nodeGraph;
+
+
 
 typedef struct bfsNode {
     
     char tape[MAXS];
     char *head;
     struct bfsNode *pre;
-    struct bfsNode *next[MAX];
+
     
 } nodeBfs;
 
@@ -50,37 +53,94 @@ int acc[MAX];
 
 char inputTape[MAXS];
 
-char line[MAXS];
+char *line;
+
+nodeGraph *arrayNode[MAX];
 
 //-----prototype
 
-char *spaceEater(void);
+void spaceEater(void);
 
 void graphBuilder(void);
 
-int charParser(char *string);
+int charParser(char *string, int n);
+
+char bfsFun(void);
+
+void addNode(int node)
 
 //-----main
 
 int main(void) {
     
-    int a;
-    scanf("%s", line);
-    a = charParser(line);
-    printf("%d", a);
+    line = (char*)malloc(sizeof(char)*MAXS);
     
+    spaceEater();
+    if(strcmp(line,"tr")){
+        
+        spaceEater();
+        while (!strcmp(line,"acc")) {
+            
+            graphBuilder();
+            spaceEater();
+            
+        }
+        
+        if(strcmp(line,"acc")){
+            
+            int c = 0;
+            spaceEater();
+            while (!strcmp(line,"max")) {
+                
+                acc[c] = charParser(line, 1);
+                spaceEater();
+                c++;
+                
+                
+            }
+            
+        }
+        
+        if(strcmp(line,"max")){
+            
+            spaceEater();
+            max = charParser(line, 1);
+            
+        }
+        spaceEater();
+        if(strcmp(line,"run")){
+            
+            spaceEater();
+            char res;
+            while(!strcmp(line,"\n")){
+                
+                res = bfsFun();
+                printf("%c \n", res);
+                spaceEater();
+                
+            }
+            
+        }
+        
+        
+    }
+    
+    
+    free(line);
     return 0;
 }
 
 //-----function
 
 //function that clar from the read line space and if the line it's void it jump from the first useful line
-char *spaceEater(){
+void spaceEater(){
     
+    free(line);
+    line = (char*)malloc(sizeof(char)*MAXS);
     char i;
     int c = 0;
     scanf("%c", &i);
-    while(i != '\n' || c == 0){
+    while(i != '\n' /*|| c == 0*/){
         
         if(i != ' ' && i != '\n'){
             line[c] = i;
@@ -90,23 +150,53 @@ char *spaceEater(){
         
     }
     
-    return line;
 }
 
-//function that found a char in the given string and return it
-int charParser(char *string){
+//function that found the nth-int in the given string and return it
+int charParser(char *string, int nth){
     
     int trad;
     char integer[10];
     int c = 0;
+    int temp = 0;
+    int i = 0;
     while(c != -1){
     
-        if(string[c] >= '0' && string[c] <= '9' ){
+        if(nth == 1){
+        
+            if(string[c] >= '0' && string[c] <= '9' ){
             
-            integer[c] = string[c];
-            c++;
+            
+                integer[c] = string[c];
+            
+                c++;
+        
+            }else {
+            
+                c = -1;
+                
+            }
         }else {
-            c = -1;
+            
+            if(string[c] >= '0' && string[c] <= '9' ){
+                
+                if (temp == 1){
+                    
+                    integer[i] = string[c];
+                    i++;
+                
+                }
+                
+                c++;
+                
+            }else if(string[c] == '\0'){
+                
+                c = -1;
+            }else {
+                
+                temp = 1;
+                c++;
+            }
         }
         
     
@@ -117,19 +207,77 @@ int charParser(char *string){
 }
 
 
+void addNode(int node){
+    
+    for(int i = 0; i <= node; i++){
+        
+        if(arrayNode[i] == NULL){
+            
+            nodeGraph * nodeG;
+            nodeG = malloc(sizeof(nodeGraph));
+            arrayNode[i] = nodeG;
+            nodeG->numberState = i;
+        
+            
+        }
+        
+    }
+    
+}
 
-//function that create the graph of the NTM using the given transictions
+
+//function that create arc of the NTM using the given transiction and linked it to the node
 void graphBuilder(){
+    
+    int c = 0;
+    char toWrite = '0';
+    char toRead = '0';
+    char move = '0';
+    int first = charParser(line, 1);
+    int last = charParser(line, 2);
+    
+        while(c != -1){
+            if(line[c] >= 'A' && line[c] <= 'z' ){
+                if(toRead == '0'){
+                    toRead = line[c];
+                }else if(toWrite == '0') {
+                    toWrite = line[c];
+                    }else {
+                        move = line[c];
+                    }
+            
+            }
+        
+            if(line[c] == '\0'){
+                c = -1;
+            }
+            c++;
+        
+        }
+    if(first < last){
+        addNode(last);
+    }else{
+        addNode(first);
+    }
+    arcGraph* newArc;
+    newArc = malloc(sizeof(arcGraph));
+    newArc->move = move;
+    newArc->toRead = toRead;
+    newArc->toWrite = toWrite;
+    arrayNode[first]->extArc[arrayNode[first]->lastInsert] = newArc;
+    arrayNode[first]->lastInsert++;
     
     
     
 }
 
 
-
-
-
-
+char bfsFun(){
+    
+    
+    
+    
+}
 
 
 
