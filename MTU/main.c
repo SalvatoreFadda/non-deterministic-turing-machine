@@ -352,10 +352,15 @@ char bfsFun(){
                         newHead = &newTape[c];
                     
                     }
-                
+                    if(currNode2 == NULL){
                 addCoda( &currNode2, &headNode2/*deve puntare alla testa della lista*/, newTape, newHead, arc->last->numberState, c);
+                        
+                    }else {
+                        addCoda( &currNode2, NULL/*deve puntare alla testa della lista*/, newTape, newHead, arc->last->numberState, c);
+                    }
                 
                 }
+                
             }
             if(accett == 0){
                 for(int i = 0; i < MAX; i++){
@@ -395,14 +400,30 @@ char bfsFun(){
 
 
 
-void addCoda(nodeList *next, nodeList *pre, char tape[], char *head, int state, int curr){
+void addCoda(nodeList *next, nodeList *pre, char *newTape, char *head, int state, int curr){
     
     if (*next == NULL) {
+       
+        nodeBfs *node;
+        node = malloc(sizeof(nodeBfs));
+        node->currState = state;
+        for(int i = 0; i < MAXS; i++){
+            
+            node->tape[i] = newTape[i];
+        }
+        node->curr = curr;
+        node->head = &(node->tape[curr]);
+        node->next = NULL;
+        *next = node;
+        if(*pre != NULL){
+            
+            *pre = node;
+        }
         
         
     }
     else {
-        addCoda(&((*lista)->next), )
+        addCoda(&((*next)->next),NULL, newTape, head, state, curr);
     }
     
     
