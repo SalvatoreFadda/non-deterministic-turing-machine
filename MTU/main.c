@@ -12,16 +12,11 @@
 
 #define MAX 100
 #define MAXS 2000
-#define START 200
+#define START 50
+
+//-----global declaration
 
 typedef enum {R,L,S} move;
-
-typedef struct graphNode {
-    
-    int numberState;
-    struct graphArc *extArc[MAX];
-    
-} nodeGraph;
 
 typedef struct graphArc {
     
@@ -33,23 +28,89 @@ typedef struct graphArc {
     
 } arcGraph;
 
+typedef struct graphNode {
+    
+    int numberState;
+    arcGraph *extArc[MAX];
+    
+} nodeGraph;
+
 typedef struct bfsNode {
     
-    int tape[MAXS];
-    int *head;
+    char tape[MAXS];
+    char *head;
     struct bfsNode *pre;
     struct bfsNode *next[MAX];
     
 } nodeBfs;
 
+long int max;
 
+int acc[MAX];
+
+char inputTape[MAXS];
+
+char line[MAXS];
 
 //-----prototype
 
-
+char *spaceEater(void);
 
 //-----main
 
-int main(int argc, const char * argv[]) {
+int main(void) {
+    
+    
+    
+    return 0;
+}
+
+//-----function
+
+char *spaceEater(){
+    
+    char i;
+    int c = 0;
+    scanf("%c", &i);
+    while(i != '\n' || c == 0){
+        
+        if(i != ' ' && i != '\n'){
+            line[c] = i;
+            c++;
+        }
+        scanf("%c", &i);
+        
+    }
+    
+    return line;
+}
+
+void graphBuilder(){
+    
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
