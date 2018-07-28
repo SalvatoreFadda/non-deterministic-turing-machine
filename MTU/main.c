@@ -42,6 +42,7 @@ typedef struct bfsNode {
     
     char tape[MAXS];
     char *head;
+    int currState;
     struct bfsNode *pre;
 
     
@@ -50,8 +51,6 @@ typedef struct bfsNode {
 int max;
 
 int acc[MAX];
-
-char inputTape[MAXS];
 
 char *line;
 
@@ -67,7 +66,7 @@ int charParser(char *string, int n);
 
 char bfsFun(void);
 
-void addNode(int node)
+void addNode(int node);
 
 //-----main
 
@@ -114,6 +113,7 @@ int main(void) {
             char res;
             while(!strcmp(line,"\n")){
                 
+            
                 res = bfsFun();
                 printf("%c \n", res);
                 spaceEater();
@@ -274,9 +274,20 @@ void graphBuilder(){
 
 char bfsFun(){
     
+    char res;
+    int c = 0;
+    while(line[c] != '\0'){
+        
+        
+        
+        
+        
+        
+    }
     
     
     
+    return res;
 }
 
 
