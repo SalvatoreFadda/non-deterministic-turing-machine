@@ -11,8 +11,7 @@
 #include <string.h>
 
 #define MAX 100
-#define MAXS 2000
-#define START 400
+#define MAXS 20000
 
 
 //-----global declaration
@@ -41,7 +40,7 @@ typedef struct graphNode {
 
 typedef struct bfsNode {
     
-    char tape[MAXS];
+    char *tape;
     char *head;
     int curr;
     int currState;
@@ -56,7 +55,7 @@ int max;
 
 int acc[MAX];
 
-char *line;
+char line[MAXS];
 
 char *inputTape;
 
@@ -70,6 +69,8 @@ void graphBuilder(void);
 
 int charParser(char *string, int n);
 
+void exceedManager(char *string, char move, int curr);
+
 char bfsFun(void);
 
 void addNode(int node);
@@ -79,8 +80,6 @@ void addCoda(nodeList *lista, nodeList *pre, char tape[], char *head, int state,
 //-----main
 
 int main(void) {
-    
-    line = (char*)malloc(sizeof(char)*MAXS);
     
     spaceEater();
     if(strcmp(line,"tr") == 0){
@@ -126,22 +125,26 @@ int main(void) {
             printf("\n RUN: %s \n", line);
             char res;
             int end = 0;
+            
+            
             while(end == 0){
                 
-                
                 end = spaceEater();
-                //sostituire in maniera che la tape diventi dinamica
-                inputTape = (char*)malloc(sizeof(char)*MAXS);
-                for(int i = 0; i < MAXS; i++){
-                    
-                    inputTape[i] = '_';
-                }
-                for(int i = 0; (i+START) < MAXS; i++){
-                    
-                    inputTape[START] = line[i];
-                }
+                printf("\n %s \n", line);
+                inputTape = (char*)malloc(sizeof(char)*strlen(line));
+                inputTape = strdup(line);
+                char *newString;
+                newString = (char*)malloc(sizeof(char)*(strlen(inputTape)+1));
+                newString[0] = '_';
+                newString = strcat(newString,inputTape);
+                memset(inputTape,0,strlen(inputTape));
+                printf("%s \n", inputTape);
+                inputTape = newString;
+                printf("%s \n", newString);
+                printf("%s \n", inputTape);
                 //------------------------------------------------
                 res = bfsFun();
+                memset(inputTape,0,strlen(inputTape));
                 printf("%c \n", res);
                 
             }
@@ -151,8 +154,6 @@ int main(void) {
         
     }
     
-    
-    free(line);
     return 0;
 }
 
@@ -246,6 +247,7 @@ void addNode(int node){
             nodeG = malloc(sizeof(nodeGraph));
             arrayNode[i] = nodeG;
             nodeG->numberState = i;
+            memset(nodeG->extArc, 0, sizeof(int)*MAX);
         
             
         }
@@ -292,6 +294,8 @@ void graphBuilder(){
     newArc->move = move;
     newArc->toRead = toRead;
     newArc->toWrite = toWrite;
+    newArc->first = arrayNode[first];
+    newArc->last = arrayNode[last];
     arrayNode[first]->extArc[arrayNode[first]->lastInsert] = newArc;
     arrayNode[first]->lastInsert++;
     
@@ -299,14 +303,41 @@ void graphBuilder(){
     
 }
 
+void exceedManager(char *string, char move, int curr){
+    
+    char *newString;
+    newString = (char*)malloc(sizeof(char)*(strlen(string)+1));
+    if(move == 'R'){
+        
+        newString = strcpy (newString,string);
+        if(curr > strlen(line)){
+            
+            newString[strlen(string)] = '_';
+            
+        }else {
+            
+            newString[strlen(string)] = line[curr+1];
+            
+        }
+    }else{
+        
+        newString[0] = '_';
+        newString = strcat(newString,string);
+        
+    }
+    memset(string,0,strlen(string));
+    string = newString;
+    
+}
+
 
 char bfsFun(){
     
-    char res = 'N';
-    int c = START;
+    char res = 'U';
+    int c = 400;
     int level = 0;
     int stop = 0;
-    char newTape[MAXS];
+    char *newTape;
     char *newHead;
     arcGraph *arc;
     nodeList headNode2 = NULL;
@@ -336,10 +367,7 @@ char bfsFun(){
                 
                     accett = 1;
                     
-                    for(int i = 0; i < MAXS; i++){
-                    
-                        newTape[i] = currNode1->tape[i];
-                    }
+                    newTape = strdup(currNode1->tape);
                     c = currNode1->curr;
                     newTape[c] = arc->toWrite;
                     if(arc->move == 'R'){
@@ -391,15 +419,7 @@ char bfsFun(){
         preNode1 = NULL;
         currNode2 = NULL;
         level++;
-        
-        
-        
-        
     }
-    if(level <= max){
-        res = 'U';
-    }
-    
     
     return res;
 }
@@ -413,10 +433,7 @@ void addCoda(nodeList *next, nodeList *pre, char *newTape, char *head, int state
         nodeBfs *node;
         node = malloc(sizeof(nodeBfs));
         node->currState = state;
-        for(int i = 0; i < MAXS; i++){
-            
-            node->tape[i] = newTape[i];
-        }
+        node->tape = strdup(newTape);
         node->curr = curr;
         node->head = &(node->tape[curr]);
         node->next = NULL;
