@@ -202,7 +202,7 @@ int charParser(char *string, int nth){
     int c = 0;
     int temp = 0;
     int i = 0;
-    memset(integer,0,strlen(integer));
+    memset(integer,0,10);
     while(c != -1){
     
         if(nth == 1){
@@ -340,6 +340,7 @@ char *exceedManager(char *string, char move, int curr){
         
     }
     memset(string,0,strlen(string));
+    free(string);
     return newString;
     
 }
@@ -462,6 +463,7 @@ char bfsFun(){
             preNode1 = currNode1;
             currNode1 = currNode1->next;
             memset(preNode1->tape,0,strlen(preNode1->tape));
+            free(preNode1->tape);
             free(preNode1);
             rimasti--;
         
@@ -489,7 +491,7 @@ nodeList addCoda(char *newTape, int head, int state, int curr){
         node = malloc(sizeof(nodeBfs));
         node->currState = state;
         node->tape = (char*)malloc(sizeof(char)*strlen(newTape));
-        memset(node->tape,0,strlen(node->tape));
+        memset(node->tape,0,strlen(newTape));
         node->tape = strdup(newTape);
         node->curr = curr;
         node->head = head;
