@@ -33,7 +33,7 @@ typedef struct graphNode {
     
     int numberState;
     int lastInsert;
-    arcGraph *extArc[MAX];
+    arcGraph extArc[MAX];
     
 } nodeGraph;
 
@@ -60,7 +60,7 @@ char line[MAXS];
 
 char *inputTape;
 
-nodeGraph *arrayNode[MAX];
+nodeGraph arrayNode[MAX];
 
 //-----prototype
 
@@ -254,13 +254,11 @@ void addNode(int node){
     
     for(int i = 0; i <= node; i++){
         
-        if(arrayNode[i] == NULL){
+        if(arrayNode[i].extArc[0].first == NULL){
             
-            nodeGraph * nodeG;
-            nodeG = malloc(sizeof(nodeGraph));
-            arrayNode[i] = nodeG;
-            nodeG->numberState = i;
-            memset(nodeG->extArc, 0, sizeof(int)*MAX);
+        
+            arrayNode[i].numberState = i;
+            memset(arrayNode[i].extArc, 0, sizeof(int)*MAX);
         
             
         }
@@ -302,15 +300,15 @@ void graphBuilder(){
     }else{
         addNode(first);
     }
-    arcGraph* newArc;
+    arcGraph *newArc;
     newArc = malloc(sizeof(arcGraph));
     newArc->move = move;
     newArc->toRead = toRead;
     newArc->toWrite = toWrite;
-    newArc->first = arrayNode[first];
-    newArc->last = arrayNode[last];
-    arrayNode[first]->extArc[arrayNode[first]->lastInsert] = newArc;
-    arrayNode[first]->lastInsert++;
+    newArc->first = &arrayNode[first];
+    newArc->last = &arrayNode[last];
+    arrayNode[first].extArc[arrayNode[first].lastInsert] = *newArc;
+    arrayNode[first].lastInsert++;
     
     
     
@@ -375,11 +373,11 @@ char bfsFun(){
         while(currNode1 != NULL){
         
             int accett = 0;
-            stop = arrayNode[currNode1->currState]->lastInsert;
+            stop = arrayNode[currNode1->currState].lastInsert;
         
             for(int i = 0; i < stop; i++){
                 
-                arc = arrayNode[currNode1->currState]->extArc[i];
+                arc = &arrayNode[currNode1->currState].extArc[i];
                 if(arc->toRead == currNode1->tape[currNode1->head]){
                 
                     nodeBfs *node;
