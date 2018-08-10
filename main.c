@@ -11,7 +11,7 @@
 #include <string.h>
 
 #define MAX 100
-#define MAXS 20000
+#define MAXS 1000
 #define DEFAULT 0
 
 
@@ -32,8 +32,9 @@ typedef struct graphArc {
 typedef struct graphNode {
     
     int numberState;
+    int acc;
     int lastInsert;
-    arcGraph *extArc[MAX];
+    arcGraph *extArc[MAX];//rendere dinamico
     
 } nodeGraph;
 
@@ -55,13 +56,11 @@ typedef nodeBfs* nodeList;
 
 int max;
 
-int acc[MAX];
-
-char line[MAXS];
+char line[MAXS];//renderlo dinamico
 
 char *inputTape;
 
-nodeGraph *arrayNode[MAX];
+nodeGraph *arrayNode[MAX];//renderlo dinamico
 
 //-----prototype
 
@@ -83,6 +82,7 @@ nodeList addCoda(char tape[], int head, int state, int curr, int length);
 
 int main(void) {
     
+    memset(arrayNode, 0, sizeof(int)*MAX);
     spaceEater();
     if(strcmp(line,"tr") == 0){
         
@@ -100,15 +100,11 @@ int main(void) {
             
             //   printf("\n ACC: %s \n", line);
             int c = 0;
-            for(int i = 0; i < MAX ; i++){
-                
-                acc[i] = -1;
-            }
             spaceEater();
             while (strcmp(line,"max") != 0) {
                 
                 //     printf("\n %s \n", line);
-                acc[c] = charParser(line, 1);
+                arrayNode[charParser(line, 1)]->acc = 1;
                 spaceEater();
                 c++;
                 
@@ -264,6 +260,8 @@ void addNode(int node){
             nodeG = malloc(sizeof(nodeGraph));
             arrayNode[i] = nodeG;
             nodeG->numberState = i;
+            nodeG->acc = 0;
+            nodeG->lastInsert = 0;
             memset(nodeG->extArc, 0, sizeof(int)*MAX);
             
             
@@ -379,7 +377,7 @@ char bfsFun(){
     node->next = NULL;
     currNode1 = node;
     while(level <= max){
-        // printf("%d Level: \n", level);
+        //printf("%d Level: \n", level);
         
         while(currNode1 != NULL){
             
@@ -440,7 +438,7 @@ char bfsFun(){
                         newTape[currNode1->head] = arc->toWrite;
                         newHead = currNode1->head;
                     }
-                    // printf("%s Tape da %d, a %d  \n", newTape, arc->first->numberState, arc->last->numberState);
+                     //printf("%s Tape da %d, a %d  \n", newTape, arc->first->numberState, arc->last->numberState);
                     //  printf(" Testa punta all'el: %d \n", newHead);
                     if(headNode2 == NULL){
                         
@@ -460,13 +458,11 @@ char bfsFun(){
                 
             }
             if(accett == 0){
-                for(int i = 0; i < MAX; i++){
-                    if(currNode1->currState == acc[i]){
+                    if(arrayNode[currNode1->currState]->acc == 1){
                         //      printf("%d CurrState/ACC: %d \n", currNode1->currState, acc[i]);
                         res = '1';
                         return res;
                     }
-                }
             }
             
             
