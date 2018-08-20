@@ -446,7 +446,7 @@ char bfsFun(){
     node->next = NULL;
     currNode1 = node;
     while(level <= max){
-      //  printf("%d Level: \n", level);
+    //   printf("%d Level: \n", level);
         while(currNode1 != NULL){
             
             int accett = 0;
@@ -470,7 +470,9 @@ char bfsFun(){
                                 
                                 //        printf("Posizione nella line: %d \n", newCurr);
                                 //newTape = exceedManager(newTape, arc->move, newCurr);
-                                newTape = (char*)realloc(newTape, sizeof(char)*(currNode1->length));
+                                newTape = (char*)realloc(newTape, sizeof(char)*((currNode1->length)+2));
+                                currNode1->tape[currNode1->head + 1 ] = '\0';
+                                currNode1->tape[currNode1->head + 2] = '\0';
                                 if(newCurr >= strlen(line)){
                                     
                                     newTape[currNode1->head+1] = '_';
@@ -501,14 +503,14 @@ char bfsFun(){
                                 
                                 
                                 // newTape = exceedManager(newTape, arc->move, currNode1->curr);
-                                newTape = (char*)realloc(newTape, sizeof(char)*(currNode1->length));
                                 
                                 char *newString;
-                                newString = (char*)malloc(sizeof(char)*(currNode1->length));
-                                memset(newString,0,currNode1->length);
+                                newString = (char*)malloc(sizeof(char)*((currNode1->length)+2));
+                                memset(newString,0,(currNode1->length)+2);
                                 newString[0] = '_';
                                 newString = strcat(newString,newTape);
-                                memcpy(newTape, newString, sizeof(char)*(newLength+1));
+                                newTape = (char*)realloc(newTape, sizeof(char)*((currNode1->length)+2));
+                                memcpy(newTape, newString, sizeof(char)*(newLength+2));
                                 free(newString);
                                 
                                 
@@ -529,7 +531,7 @@ char bfsFun(){
                             newTape[currNode1->head] = arc->toWrite;
                             newHead = currNode1->head;
                         }
-                    //    printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
+                     //   printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
                      //   printf("lenght %d", newLength);
                      //     printf(" Testa punta all'el: %d \n", newHead);
                         if(headNode2 == NULL){
