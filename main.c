@@ -446,7 +446,7 @@ char bfsFun(){
     node->next = NULL;
     currNode1 = node;
     while(level <= max){
-    //   printf("%d Level: \n", level);
+       printf("%d Level: \n", level);
         while(currNode1 != NULL){
             
             int accett = 0;
@@ -460,7 +460,8 @@ char bfsFun(){
                     }else   {
                         currNode1->tape[currNode1->length] = '\0';
                         accett = 1;
-                        newTape = strdup(currNode1->tape);
+                        newTape = malloc(sizeof(char)*((currNode1->length)+2));
+                        memcpy(newTape, currNode1->tape, sizeof(char)*((currNode1->length)+2));
                         newLength = currNode1->length;
                         if(arc->move == 'R'){
                             
@@ -472,7 +473,6 @@ char bfsFun(){
                                 //newTape = exceedManager(newTape, arc->move, newCurr);
                                 newTape = (char*)realloc(newTape, sizeof(char)*((currNode1->length)+2));
                                 currNode1->tape[currNode1->head + 1 ] = '\0';
-                                currNode1->tape[currNode1->head + 2] = '\0';
                                 if(newCurr >= strlen(line)){
                                     
                                     newTape[currNode1->head+1] = '_';
@@ -531,7 +531,7 @@ char bfsFun(){
                             newTape[currNode1->head] = arc->toWrite;
                             newHead = currNode1->head;
                         }
-                     //   printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
+                       printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
                      //   printf("lenght %d", newLength);
                      //     printf(" Testa punta all'el: %d \n", newHead);
                         if(headNode2 == NULL){
@@ -602,7 +602,7 @@ nodeList addCoda(char *newTape, int head, int state, int curr, int length) {
     newTape[length] = '\0';
     node->tape = (char*)malloc(sizeof(char)*strlen(newTape));
     memset(node->tape,0,strlen(newTape));
-    node->tape = strdup(newTape);
+    memcpy(node->tape, newTape, sizeof(char)*strlen(newTape));
     node->curr = curr;
     node->head = head;
     node->next = NULL;
