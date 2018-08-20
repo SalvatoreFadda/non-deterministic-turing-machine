@@ -12,7 +12,7 @@
 
 #define MAX  200
 #define MAXS 10000
-#define DEFAULT 0
+#define DEFAULT 5
 
 
 //-----global declaration
@@ -35,7 +35,8 @@ typedef struct bfsNode {
     int head;
     int curr;
     int currState;
-    int length;
+    int lengthR;
+    int lengthL;
     struct bfsNode *next;
     
     
@@ -61,7 +62,7 @@ void graphBuilder(void);
 
 int charParser(char *string, int n);
 
-void *exceedManager(char *string, char move, int curr);
+//void *exceedManager(char *string, char move, int curr);
 
 char bfsFun(void);
 
@@ -69,7 +70,7 @@ int loopChecker(arcGraph *arc);
 
 void addNode(int node);
 
-nodeList addCoda(char tape[], int head, int state, int curr, int length);
+nodeList addCoda(char tape[], int head, int state, int curr, int lengthR, int lengthL);
 
 //-----main
 
@@ -423,7 +424,8 @@ char bfsFun(){
     int level = 1;
     int loop = 0;
     int rimasti = 1;
-    int newLength = 0;
+    int newLengthR = 0;
+    int newLengthL = 0;
     char *newTape;
     int newCurr = 0;
     int newHead;
@@ -436,17 +438,19 @@ char bfsFun(){
     //root con DEFAULT = 0;
     nodeBfs *node;
     node = malloc(sizeof(nodeBfs));
-    node->tape = (char*)malloc(sizeof(char)*2);
-    node->currState = DEFAULT;
-    node->tape[DEFAULT] = line[0];
+    node->tape = (char*)malloc(sizeof(char)*DEFAULT);
+    memset(node->tape,0,DEFAULT);
+    node->currState = 0;
+    node->tape[0] = line[0];
     //  printf("%s RootTape \n", node->tape);
     node->curr = 0;
-    node->length = 1;
+    node->lengthR = DEFAULT;
+    node->lengthL = 0;
     node->head = 0;
     node->next = NULL;
     currNode1 = node;
     while(level <= max){
-       printf("%d Level: \n", level);
+        printf("%d Level: \n", level);
         while(currNode1 != NULL){
             
             int accett = 0;
@@ -458,21 +462,33 @@ char bfsFun(){
                     if(loopChecker(arc) == 1){
                         loop = 1;
                     }else   {
-                        currNode1->tape[currNode1->length] = '\0';
+                        //currNode1->tape[currNode1->length] = '\0';
                         accett = 1;
-                        newTape = malloc(sizeof(char)*((currNode1->length)+2));
-                        memcpy(newTape, currNode1->tape, sizeof(char)*((currNode1->length)+2));
-                        newLength = currNode1->length;
+                        newTape = malloc(sizeof(char)*((currNode1->lengthR + currNode1->lengthL)));
+                        memcpy(newTape, currNode1->tape, sizeof(char)*((currNode1->lengthR + currNode1->lengthL)));
+                        newLengthL = currNode1->lengthL;
+                        newLengthR = currNode1->lengthR;
                         if(arc->move == 'R'){
                             
                             newCurr = currNode1->curr + 1;
-                            currNode1->tape[currNode1->length] = '\0';
-                            if(((currNode1->head)+1) == strlen(currNode1->tape) ){ //strlen(line) < currNode1->curr
+                            //   currNode1->tape[currNode1->length] = '\0';
+                            if(((currNode1->head)+1) == (newLengthR + newLengthL) ){ //strlen(line) < currNode1->curr
                                 
                                 //        printf("Posizione nella line: %d \n", newCurr);
                                 //newTape = exceedManager(newTape, arc->move, newCurr);
-                                newTape = (char*)realloc(newTape, sizeof(char)*((currNode1->length)+2));
-                                currNode1->tape[currNode1->head + 1 ] = '\0';
+                                newLengthR = newLengthR + DEFAULT;
+                                newTape = (char*)realloc(newTape, sizeof(char)*(newLengthR + newLengthL));
+                                for(int i = (currNode1->lengthR+newLengthL); i < (newLengthR+newLengthL); i++){
+                                    
+                                    newTape[i] = '\0';
+                                    
+                                    
+                                }
+                                // currNode1->tape[currNode1->head + 1 ] = '\0';
+                            }
+                            
+                            if(newTape[currNode1->head + 1 ] == '\0'){
+                                
                                 if(newCurr >= strlen(line)){
                                     
                                     newTape[currNode1->head+1] = '_';
@@ -482,19 +498,17 @@ char bfsFun(){
                                     newTape[currNode1->head+1] = line[newCurr];
                                     
                                 }
-                                newTape[currNode1->head] = arc->toWrite;
-                                newHead = currNode1->head + 1;
-                                newLength++;
-                                
-                            }else{
-                                
-                                newTape[currNode1->head] = arc->toWrite;
-                                newHead = currNode1->head + 1;
-                                
-                                
-                                
                             }
                             
+                            newTape[currNode1->head] = arc->toWrite;
+                            newHead = currNode1->head + 1;
+                            
+                            /* }else{
+                             
+                             newTape[currNode1->head] = arc->toWrite;
+                             newHead = currNode1->head + 1;
+                             
+                             }*/
                             
                         }else if(arc->move == 'L'){
                             
@@ -503,20 +517,24 @@ char bfsFun(){
                                 
                                 
                                 // newTape = exceedManager(newTape, arc->move, currNode1->curr);
-                                
+                                newLengthL = newLengthL + DEFAULT;
                                 char *newString;
-                                newString = (char*)malloc(sizeof(char)*((currNode1->length)+2));
-                                memset(newString,0,(currNode1->length)+2);
-                                newString[0] = '_';
+                                newString = (char*)malloc(sizeof(char)*(newLengthR + newLengthL));
+                                memset(newString, 0, sizeof(char)*(newLengthR + newLengthL));
+                                for(int i = 0; i < DEFAULT; i++){
+                                    
+                                    newString[i] = '_';
+                                    
+                                    
+                                }
                                 newString = strcat(newString,newTape);
-                                newTape = (char*)realloc(newTape, sizeof(char)*((currNode1->length)+2));
-                                memcpy(newTape, newString, sizeof(char)*(newLength+2));
+                                newTape = (char*)realloc(newTape, sizeof(char)*(newLengthR + newLengthL));
+                                memcpy(newTape, newString, sizeof(char)*(newLengthR + newLengthL));
                                 free(newString);
                                 
                                 
-                                newTape[currNode1->head + 1] = arc->toWrite;
-                                newHead = currNode1->head;
-                                newLength++;
+                                newTape[currNode1->head + DEFAULT] = arc->toWrite;
+                                newHead = currNode1->head + DEFAULT - 1;
                                 
                             }else{
                                 
@@ -531,18 +549,18 @@ char bfsFun(){
                             newTape[currNode1->head] = arc->toWrite;
                             newHead = currNode1->head;
                         }
-                       printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
-                     //   printf("lenght %d", newLength);
-                     //     printf(" Testa punta all'el: %d \n", newHead);
+                         printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
+                        //   printf("lenght %d", newLength);
+                        //  printf(" Testa punta all'el: %d \n", newHead);
                         if(headNode2 == NULL){
                             
-                            headNode2 = addCoda(newTape, newHead, arc->last, newCurr, newLength);
+                            headNode2 = addCoda(newTape, newHead, arc->last, newCurr, newLengthR, newLengthL);
                             rimasti++;
                             currNode2 = headNode2;
                             
                         }else{
                             
-                            currNode2->next = addCoda(newTape, newHead, arc->last, newCurr, newLength);
+                            currNode2->next = addCoda(newTape, newHead, arc->last, newCurr, newLengthR, newLengthL);
                             rimasti++;
                             currNode2 = currNode2->next;
                             
@@ -567,6 +585,7 @@ char bfsFun(){
             
             preNode1 = currNode1;
             currNode1 = currNode1->next;
+            free(preNode1->tape);
             free(preNode1);
             rimasti--;
             
@@ -593,16 +612,17 @@ char bfsFun(){
 
 
 
-nodeList addCoda(char *newTape, int head, int state, int curr, int length) {
+nodeList addCoda(char *newTape, int head, int state, int curr, int lengthR, int lengthL) {
     
     nodeBfs *node;
     node = malloc(sizeof(nodeBfs));
     node->currState = state;
-    node->length = length;
-    newTape[length] = '\0';
-    node->tape = (char*)malloc(sizeof(char)*strlen(newTape));
-    memset(node->tape,0,strlen(newTape));
-    memcpy(node->tape, newTape, sizeof(char)*strlen(newTape));
+    node->lengthR = lengthR;
+    node->lengthL = lengthL;
+    //  newTape[length] = '\0';
+    node->tape = newTape; //(char*)malloc(sizeof(char)*strlen(newTape));
+    //memset(node->tape,0,strlen(newTape));
+    // memcpy(node->tape, newTape, sizeof(char)*strlen(newTape));
     node->curr = curr;
     node->head = head;
     node->next = NULL;
