@@ -450,7 +450,7 @@ char bfsFun(){
     node->next = NULL;
     currNode1 = node;
     while(level <= max){
-        printf("%d Level: \n", level);
+      //  printf("%d Level: \n", level);
         while(currNode1 != NULL){
             
             int accett = 0;
@@ -464,8 +464,9 @@ char bfsFun(){
                     }else   {
                         //currNode1->tape[currNode1->length] = '\0';
                         accett = 1;
-                        newTape = malloc(sizeof(char)*((currNode1->lengthR + currNode1->lengthL)));
+                        newTape = malloc(sizeof(char)*((currNode1->lengthR + currNode1->lengthL+1)));
                         memcpy(newTape, currNode1->tape, sizeof(char)*((currNode1->lengthR + currNode1->lengthL)));
+                        newTape[currNode1->lengthR + currNode1->lengthL] = '\0';
                         newLengthL = currNode1->lengthL;
                         newLengthR = currNode1->lengthR;
                         if(arc->move == 'R'){
@@ -549,7 +550,7 @@ char bfsFun(){
                             newTape[currNode1->head] = arc->toWrite;
                             newHead = currNode1->head;
                         }
-                         printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
+                       //  printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
                         //   printf("lenght %d", newLength);
                         //  printf(" Testa punta all'el: %d \n", newHead);
                         if(headNode2 == NULL){
