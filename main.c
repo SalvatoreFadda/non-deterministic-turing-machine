@@ -10,9 +10,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX  200
-#define MAXS 10000
-#define DEFAULT 5
+#define MAX  1000
+#define MAXS 20000
+#define DEFAULT 512
 
 
 //-----global declaration
@@ -46,13 +46,13 @@ typedef nodeBfs* nodeList;
 
 int atmNode;
 
-int max;
+unsigned int max;
 
 char line[MAXS];//renderlo dinamico
 
 int acc[MAX];
 
-arcGraph **arrayNode;//renderlo dinamico
+arcGraph *arrayNode[MAX];//renderlo dinamico
 
 //-----prototype
 
@@ -60,13 +60,13 @@ int spaceEater(void);
 
 void graphBuilder(void);
 
-int charParser(char *string, int n);
+long charParser(char *string, int n);
 
 //void *exceedManager(char *string, char move, int curr);
 
 char bfsFun(void);
 
-int loopChecker(arcGraph *arc);
+int loopChecker(arcGraph *arc, nodeBfs *node);
 
 void addNode(int node);
 
@@ -76,7 +76,7 @@ nodeList addCoda(char tape[], int head, int state, int curr, int lengthR, int le
 
 int main(void) {
     
-    arrayNode = (arcGraph**) malloc(sizeof(arcGraph*));
+   // arrayNode = (arcGraph**) malloc(sizeof(arcGraph*));
     arrayNode[0] = NULL;
     atmNode = 0;
     spaceEater();
@@ -121,7 +121,7 @@ int main(void) {
             while (strcmp(line,"max") != 0) {
                 
                 //     printf("\n %s \n", line);
-                acc[c] = charParser(line, 1);
+                acc[c] = (int) charParser(line, 1);
                 //    printf("accettazione %d \n", acc[c]);
                 spaceEater();
                 c++;
@@ -133,10 +133,11 @@ int main(void) {
         
         if(strcmp(line,"max") == 0){
             
-            //   printf("\n MAX: %s \n", line);
+           // printf("\n MAX: %s \n", line);
             spaceEater();
-            //  printf("\n %s \n", line);
-            max = charParser(line, 1);
+          // printf("\n MAX %s \n", line);
+            max = (unsigned int) charParser(line, 1);
+            //printf("\n max : %d \n", max);
             
         }
         spaceEater();
@@ -169,9 +170,11 @@ int main(void) {
                  if(*newString == '\0'){
                  printf("\n cacca \n");
                  } */
+                if(end != 2){
                 res = bfsFun();
                 // memset(inputTape,0,strlen(inputTape));
-                printf("%c\n", res);;
+                printf("%c\n", res);
+                }
                 
             }
             
@@ -190,19 +193,18 @@ int spaceEater(){
     
     memset(line,0,strlen(line));
     char eof = '\0';
-    char i = '\0';
     int c = 0;
-    eof = scanf("%c", &i);
+    eof = getchar();
     if(eof == EOF){
-        return 1;
+        return 2;
     }
-    while(i != '\n' || c == 0){
+    while(eof != '\n' || c == 0){
         
-        if(i != ' ' && i != '\n' && i != '\r'){
-            line[c] = i;
+        if(eof != ' ' && eof != '\n' && eof != '\r'){
+            line[c] = eof;
             c++;
         }
-        eof = scanf("%c", &i);
+        eof = getchar();
         if(eof == EOF){
             return 1;
         }
@@ -213,14 +215,14 @@ int spaceEater(){
 }
 
 //function that found the nth-int in the given string and return it
-int charParser(char *string, int nth){
+long charParser(char *string, int nth){
     
-    int trad;
-    char integer[10];
+    long trad;
+    char integer[MAX];
     int c = 0;
     int temp = 0;
     int i = 0;
-    memset(integer,0,10);
+    memset(integer,0,MAX);
     while(c != -1){
         
         if(nth == 1){
@@ -262,7 +264,8 @@ int charParser(char *string, int nth){
         
         
     }
-    trad = (int) strtol(integer, (char **)NULL, 10);
+   // printf("\n integer %s \n", integer);
+    trad = atol(integer);
     
     return trad;
 }
@@ -274,7 +277,7 @@ void addNode(int node){
     if(node >= atmNode){
         
         
-        arrayNode = (arcGraph**) realloc(arrayNode, sizeof(arcGraph*)*(node+1));
+       // arrayNode = (arcGraph**) realloc(arrayNode, sizeof(arcGraph*)*(node+1));
         //     printf("riallocato con node  = %d e atmNode = %d \n", node, atmNode);
         for(int i = atmNode+1; i < (node+1) ; i++){
             
@@ -302,8 +305,8 @@ void graphBuilder(){
     char toWrite = '0';
     char toRead = '0';
     char move = '0';
-    int first = charParser(line, 1);
-    int last = charParser(line, 2);
+    int first = (int) charParser(line, 1);
+    int last = (int) charParser(line, 2);
     
     while(c != -1){
         if(line[c] >= 'A' && line[c] <= 'z' ){
@@ -392,7 +395,7 @@ void graphBuilder(){
  
  } */
 
-int loopChecker(arcGraph *arc){
+int loopChecker(arcGraph *arc, nodeBfs *node){
     int i = 0;
     if(arc->first == arc->last){
         
@@ -405,13 +408,49 @@ int loopChecker(arcGraph *arc){
             i = 1;
             return i;
         }else {
-            
-            //caso rimbalzo con autoanello
+          /*  //caso rimbalzo con autoanello
+            if(arc->toRead == arc->toWrite && arc->move == 'L'){
+                
+                if(((node->head)-1) < 0){
+                    
+                    arcGraph* p;
+                    p = arrayNode[arc->last];
+                    
+                    while(p->next != NULL){
+                        
+                        p = p->next;
+                        if(node->tape[node->head-1] == p->toRead && p->toRead == p->toWrite && p->move == 'R'){
+                            
+                            i = 1;
+                            return i;
+                        }
+                        
+                    }
+                }
+            }else if(arc->toRead == arc->toWrite && arc->move == 'R'){
+                
+                if((node->head)+1 != (node->lengthL+node->lengthR) && node->curr+1 < strlen(line)){
+                    
+                    arcGraph* p;
+                    p = arrayNode[arc->last];
+                    
+                    while(p->next != NULL){
+                        
+                        p = p->next;
+                        if(line[node->curr+1] == p->toRead && p->toRead == p->toWrite && p->move == 'L'){
+                            
+                            i = 1;
+                            return i;
+                        }
+                        
+                    }
+                }
+            }*/
         }
         
     }else {
         
-        //caso rimbalzo senza autoanello
+        
     }
     
     return i;
@@ -421,9 +460,9 @@ int loopChecker(arcGraph *arc){
 char bfsFun(){
     
     char res = 'U';
-    int level = 1;
+    unsigned int level = 1;
     int loop = 0;
-    int rimasti = 1;
+   // int rimasti = 1;
     int newLengthR = 0;
     int newLengthL = 0;
     char *newTape;
@@ -450,7 +489,7 @@ char bfsFun(){
     node->next = NULL;
     currNode1 = node;
     while(level <= max){
-      //  printf("%d Level: \n", level);
+       printf("%d Level: \n", level);
         while(currNode1 != NULL){
             
             int accett = 0;
@@ -459,7 +498,8 @@ char bfsFun(){
             while(arc != NULL){
                 
                 if(arc->toRead == currNode1->tape[currNode1->head]){
-                    if(loopChecker(arc) == 1){
+                   
+                    if(loopChecker(arc, currNode1) == 1){
                         loop = 1;
                     }else   {
                         //currNode1->tape[currNode1->length] = '\0';
@@ -475,7 +515,7 @@ char bfsFun(){
                             //   currNode1->tape[currNode1->length] = '\0';
                             if(((currNode1->head)+1) == (newLengthR + newLengthL) ){ //strlen(line) < currNode1->curr
                                 
-                                //        printf("Posizione nella line: %d \n", newCurr);
+                               // printf("realloc destra \n");
                                 //newTape = exceedManager(newTape, arc->move, newCurr);
                                 newLengthR = newLengthR + DEFAULT;
                                 newTape = (char*)realloc(newTape, sizeof(char)*(newLengthR + newLengthL));
@@ -520,8 +560,8 @@ char bfsFun(){
                                 // newTape = exceedManager(newTape, arc->move, currNode1->curr);
                                 newLengthL = newLengthL + DEFAULT;
                                 char *newString;
-                                newString = (char*)malloc(sizeof(char)*(newLengthR + newLengthL));
-                                memset(newString, 0, sizeof(char)*(newLengthR + newLengthL));
+                                newString = (char*)malloc(sizeof(char)*(newLengthR + newLengthL+1));
+                                memset(newString, 0, sizeof(char)*(newLengthR + newLengthL+1));
                                 for(int i = 0; i < DEFAULT; i++){
                                     
                                     newString[i] = '_';
@@ -550,19 +590,19 @@ char bfsFun(){
                             newTape[currNode1->head] = arc->toWrite;
                             newHead = currNode1->head;
                         }
-                       //  printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
+                         printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
                         //   printf("lenght %d", newLength);
                         //  printf(" Testa punta all'el: %d \n", newHead);
                         if(headNode2 == NULL){
                             
                             headNode2 = addCoda(newTape, newHead, arc->last, newCurr, newLengthR, newLengthL);
-                            rimasti++;
+                           // rimasti++;
                             currNode2 = headNode2;
                             
                         }else{
                             
                             currNode2->next = addCoda(newTape, newHead, arc->last, newCurr, newLengthR, newLengthL);
-                            rimasti++;
+                          //  rimasti++;
                             currNode2 = currNode2->next;
                             
                         }
@@ -588,7 +628,7 @@ char bfsFun(){
             currNode1 = currNode1->next;
             free(preNode1->tape);
             free(preNode1);
-            rimasti--;
+          //  rimasti--;
             
         }
         if(headNode2 == NULL){
