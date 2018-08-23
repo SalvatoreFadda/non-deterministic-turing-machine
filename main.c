@@ -12,7 +12,7 @@
 
 #define MAX  1000
 #define MAXS 10000
-#define DEFAULT 512
+#define DEFAULT 10
 #define ALPHA 63
 
 
@@ -409,12 +409,12 @@ char bfsFun(){
     directAddr *dir;
     dir = malloc(sizeof(directAddr));
     arc = malloc(sizeof(arcGraph));
-    nodeBfs *currNode1 = NULL;
+    nodeList currNode1 = NULL;
     nodeList headNode2 = NULL;
     nodeList currNode2 = NULL;
     nodeList preNode1 = NULL;
     currNode1 = malloc(sizeof(nodeBfs));
-    currNode1->tape = malloc(sizeof(char)*DEFAULT);
+    currNode1->tape = malloc(sizeof(char)*DEFAULT+1);
     memset(currNode1->tape, '_', DEFAULT);
     currNode1->tape[DEFAULT] = '\0';
     currNode1->head = DEFAULT/2;
@@ -432,7 +432,7 @@ char bfsFun(){
             
             while(arc != NULL){
                 
-                if(arc->toRead == '_' && (arc->move == 'L' || arc->move == 'R') && arc->first == arc->last){
+                if(arc->toRead == '_' && arc->first == arc->last){
                     
                     loop = 1;
                     
@@ -445,7 +445,7 @@ char bfsFun(){
                     
                     }else{
                         
-                        newTape = malloc(sizeof(char)*(strlen(currNode1->tape)));
+                        newTape = malloc(sizeof(char)*(strlen(currNode1->tape)+1));
                         memcpy(newTape, currNode1->tape, strlen(currNode1->tape));
                         newTape[strlen(currNode1->tape)] = '\0';
                     }
@@ -459,7 +459,7 @@ char bfsFun(){
                             }
                             if(newTape[currNode1->head + 1 ] == '_'){
                                 
-                                if(currNode1->curr+1 < strlen(line)){
+                                if((currNode1->curr)+1 < strlen(line)){
                                     
                                     newTape[currNode1->head+1] = line[currNode1->curr+1];
                                     newCurr = currNode1->curr +1;
@@ -534,7 +534,7 @@ char bfsFun(){
             
             preNode1 = currNode1;
             currNode1 = currNode1->next;
-            free(preNode1->tape);
+           // free(preNode1->tape);
             free(preNode1);
             
         }
@@ -577,20 +577,20 @@ char *tapeManager(char move, char *tape){
     char *newString;
     switch (move) {
         case 'R':
-            newString = malloc(sizeof(char)*(strlen(tape)+DEFAULT));
+            newString = malloc(sizeof(char)*(strlen(tape)+DEFAULT)+1);
             memset(newString, '_', (strlen(tape)+DEFAULT));
             memcpy(newString, tape, strlen(tape));
             newString[strlen(newString)] = '\0';
-            free(tape);
+            //free(tape);
             return newString;
             break;
             
         case 'L':
-            newString = malloc(sizeof(char)*(strlen(tape)+DEFAULT));
+            newString = malloc(sizeof(char)*(strlen(tape)+DEFAULT+1));
             memset(newString, '_', DEFAULT-1);
             newString = strcat(newString, tape);
             newString[strlen(newString)] = '\0';
-            free(tape);
+            //free(tape);
             return newString;
             break;
             
