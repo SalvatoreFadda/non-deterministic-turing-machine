@@ -11,8 +11,9 @@
 #include <string.h>
 
 #define MAX  1000
-#define MAXS 20000
+#define MAXS 10000
 #define DEFAULT 512
+#define ALPHA 63
 
 
 //-----global declaration
@@ -29,14 +30,21 @@ typedef struct graphArc {
     
 } arcGraph;
 
+typedef struct directAddr{
+    
+    arcGraph *trans[ALPHA];
+    
+    
+} directAddr;
+
 typedef struct bfsNode {
     
     char *tape;
     int head;
     int curr;
     int currState;
-    int lengthR;
-    int lengthL;
+    //int length;
+    //int lengthL;
     struct bfsNode *next;
     
     
@@ -52,7 +60,7 @@ char line[MAXS];//renderlo dinamico
 
 int acc[MAX];
 
-arcGraph *arrayNode[MAX];//renderlo dinamico
+directAddr *arrayNode[MAX];//renderlo dinamico
 
 //-----prototype
 
@@ -62,60 +70,63 @@ void graphBuilder(void);
 
 long charParser(char *string, int n);
 
-//void *exceedManager(char *string, char move, int curr);
+char *tapeManager(char move, char *tape);
+
+int dynamicAddr(char read);
 
 char bfsFun(void);
 
-int loopChecker(arcGraph *arc, nodeBfs *node);
-
 void addNode(int node);
 
-nodeList addCoda(char tape[], int head, int state, int curr, int lengthR, int lengthL);
+nodeList addCoda(char tape[], int head, int curr, int currState);
 
 //-----main
 
 int main(void) {
     
-   // arrayNode = (arcGraph**) malloc(sizeof(arcGraph*));
-    arrayNode[0] = NULL;
+    // arrayNode = (arcGraph**) malloc(sizeof(arcGraph*));
+    for(int i = 0; i < MAX ; i++){
+        
+        arrayNode[i] = NULL;
+    }
     atmNode = 0;
     spaceEater();
     if(strcmp(line,"tr") == 0){
         
-        // printf("\n TR: %s \n", line);
+         //printf("\n TR: %s \n", line);
         spaceEater();
         while (strcmp(line,"acc") != 0) {
             
-            //   printf("\n %s \n", line);
+           // printf("\n %s \n", line);
             graphBuilder();
             spaceEater();
             
         }
         
-        for(int i = 0; i <= atmNode; i++){
+      /*  for(int i = 0; i <= atmNode; i++){
             
             if(arrayNode[i] != NULL){
                 
-                //   printf("\n nodo: %d", i);
+                   printf("\n nodo: %d", i);
                 arcGraph* p;
-                p = arrayNode[i];
+                p = arrayNode[i]->trans[dynamicAddr(p->toRead)];
                 while(p != NULL){
                     
-                    // printf("  a % d leggendo %c ", p->last, p->toRead);
+                     printf("  a % d leggendo %c ", p->last, p->toRead);
                     p = p->next;
                 }
                 
             }
             
             
-        }
+        } */
         for(int i = 0; i < MAX; i++){
             
             acc[i] = -1;
         }
         if(strcmp(line,"acc") == 0){
             
-            //   printf("\n ACC: %s \n", line);
+             //  printf("\n ACC: %s \n", line);
             int c = 0;
             spaceEater();
             while (strcmp(line,"max") != 0) {
@@ -133,9 +144,9 @@ int main(void) {
         
         if(strcmp(line,"max") == 0){
             
-           // printf("\n MAX: %s \n", line);
+             //printf("\n MAX: %s \n", line);
             spaceEater();
-          // printf("\n MAX %s \n", line);
+            // printf("\n MAX %s \n", line);
             max = (unsigned int) charParser(line, 1);
             //printf("\n max : %d \n", max);
             
@@ -143,14 +154,14 @@ int main(void) {
         spaceEater();
         if(strcmp(line,"run") == 0){
             
-            //   printf("\n RUN: %s \n", line);
+             //  printf("\n RUN: %s \n", line);
             char res;
             int end = 0;
             
             while(end == 0){
                 
                 end = spaceEater();
-                //     printf("\n %s \n", line);
+                    // printf("\n %s \n", line);
                 /* inputTape = (char*)malloc(sizeof(char)*strlen(line));
                  inputTape = strdup(line);
                  char *newString;
@@ -171,9 +182,9 @@ int main(void) {
                  printf("\n cacca \n");
                  } */
                 if(end != 2){
-                res = bfsFun();
-                // memset(inputTape,0,strlen(inputTape));
-                printf("%c\n", res);
+                    res = bfsFun();
+                    // memset(inputTape,0,strlen(inputTape));
+                    printf("%c\n", res);
                 }
                 
             }
@@ -264,41 +275,39 @@ long charParser(char *string, int nth){
         
         
     }
-   // printf("\n integer %s \n", integer);
+    // printf("\n integer %s \n", integer);
     trad = atol(integer);
     
     return trad;
 }
 
 
-void addNode(int node){
+int dynamicAddr(char read){
     
-    
-    if(node >= atmNode){
+    int address;
+    if(read >= '0' && read <= '9'){
+        
+        address = (int) read;
+        return (address - 48);
         
         
-       // arrayNode = (arcGraph**) realloc(arrayNode, sizeof(arcGraph*)*(node+1));
-        //     printf("riallocato con node  = %d e atmNode = %d \n", node, atmNode);
-        for(int i = atmNode+1; i < (node+1) ; i++){
-            
-            arrayNode[i] = NULL;
-        }
-        atmNode = node;
+    }else if(read >= 'A' && read <= 'Z'){
         
-        /*  nodeGraph * nodeG;
-         nodeG = malloc(sizeof(nodeGraph));
-         arrayNode[i] = nodeG;
-         nodeG->numberState = i;
-         nodeG->acc = 0;
-         nodeG->lastInsert = 0;
-         nodeG->extArc = malloc(sizeof(arcGraph*)); */
+        address = (int) read;
+        return (address - 55);
+        
+    }else if(read >= 'a' && read <= 'z'){
+        
+        address = (int) read;
+        return (address - 61);
+        
+    }else{
+        
+        return (ALPHA - 1);
         
     }
-    
 }
 
-
-//function that create arc of the NTM using the given transiction and linked it to the node
 void graphBuilder(){
     
     int c = 0;
@@ -325,9 +334,11 @@ void graphBuilder(){
         }
         
     }
+    
     if(first < last){
         addNode(last);
     }else{
+       // printf("cacca node \n");
         addNode(first);
     }
     
@@ -339,244 +350,136 @@ void graphBuilder(){
     newArc->first = first;
     newArc->last = last;
     newArc->next = NULL;
-    if(arrayNode[first] == NULL){
+    if(arrayNode[first]->trans[dynamicAddr(toRead)] == NULL){
         
-        arrayNode[first] = newArc;
+       arrayNode[first]->trans[dynamicAddr(toRead)] = newArc;
         
     }else{
         
         arcGraph* p;
-        p = arrayNode[first];
+        p = arrayNode[first]->trans[dynamicAddr(toRead)];
         
         while(p->next != NULL){
-            
+        
             p = p->next;
             
         }
         p->next = newArc;
         
     }
-    /*arrayNode[first]->extArc = (arcGraph**) realloc(arrayNode[first]->extArc, sizeof(arcGraph*)*((arrayNode[first]->lastInsert)+1));
-     arrayNode[first]->extArc[arrayNode[first]->lastInsert] = newArc;
-     arrayNode[first]->lastInsert++;*/
-    
-    
-    
 }
 
-/*void *exceedManager(char *string, char move, int curr){
- 
- char *newString;
- newString = (char*)malloc(sizeof(char)*(strlen(string)+2));
- string = (char*) realloc(string, sizeof(char)*(strlen(string)+2));
- memset(newString,0,strlen(string)+2);
- if(move == 'R'){
- 
- newString = strcpy (newString,string);
- if(curr >= strlen(line)){
- 
- string[strlen(string)] = '_';
- 
- }else {
- 
- string[strlen(string)] = line[curr];
- 
- }
- }else{
- char *newString;
- newString = (char*)malloc(sizeof(char)*(strlen(string)+2));
- memset(newString,0,strlen(string)+2);
- newString[0] = '_';
- string = strcat(newString,string);
- 
- }
- memset(newString,0,strlen(newString));
- free(newString);
- 
- } */
-
-int loopChecker(arcGraph *arc, nodeBfs *node){
-    int i = 0;
-    if(arc->first == arc->last){
-        
-        if(arc->toRead == arc->toWrite && arc->move == 'S'){
+void addNode(int node){
+    
+    
+    if(atmNode <= node){
+    
+        for(int i = 0; i < (node+1) ; i++){
             
-            i = 1;
-            return i;
-        }else if(arc->toRead == '_'){
+            if(arrayNode[i] == NULL){
             
-            i = 1;
-            return i;
-        }else {
-          /*  //caso rimbalzo con autoanello
-            if(arc->toRead == arc->toWrite && arc->move == 'L'){
-                
-                if(((node->head)-1) < 0){
-                    
-                    arcGraph* p;
-                    p = arrayNode[arc->last];
-                    
-                    while(p->next != NULL){
-                        
-                        p = p->next;
-                        if(node->tape[node->head-1] == p->toRead && p->toRead == p->toWrite && p->move == 'R'){
-                            
-                            i = 1;
-                            return i;
-                        }
-                        
-                    }
+                directAddr *newDin;
+                newDin = malloc(sizeof(directAddr));
+               
+                for(int j = 0; j < ALPHA; j++){
+                   
+                    newDin->trans[j] = NULL;
                 }
-            }else if(arc->toRead == arc->toWrite && arc->move == 'R'){
-                
-                if((node->head)+1 != (node->lengthL+node->lengthR) && node->curr+1 < strlen(line)){
-                    
-                    arcGraph* p;
-                    p = arrayNode[arc->last];
-                    
-                    while(p->next != NULL){
-                        
-                        p = p->next;
-                        if(line[node->curr+1] == p->toRead && p->toRead == p->toWrite && p->move == 'L'){
-                            
-                            i = 1;
-                            return i;
-                        }
-                        
-                    }
-                }
-            }*/
+                arrayNode[i] = newDin;
+            }
         }
-        
-    }else {
-        
+        atmNode = node;
         
     }
     
-    return i;
+    
     
 }
+
 
 char bfsFun(){
     
     char res = 'U';
-    unsigned int level = 1;
+    unsigned int level = 0;
     int loop = 0;
-   // int rimasti = 1;
-    int newLengthR = 0;
-    int newLengthL = 0;
-    char *newTape;
+    int newHead = 0;
     int newCurr = 0;
-    int newHead;
     arcGraph *arc;
+    char *newTape;
+    directAddr *dir;
+    dir = malloc(sizeof(directAddr));
     arc = malloc(sizeof(arcGraph));
+    nodeBfs *currNode1 = NULL;
     nodeList headNode2 = NULL;
     nodeList currNode2 = NULL;
     nodeList preNode1 = NULL;
-    nodeList currNode1;
-    //root con DEFAULT = 0;
-    nodeBfs *node;
-    node = malloc(sizeof(nodeBfs));
-    node->tape = (char*)malloc(sizeof(char)*DEFAULT);
-    memset(node->tape,0,DEFAULT);
-    node->currState = 0;
-    node->tape[0] = line[0];
-    //  printf("%s RootTape \n", node->tape);
-    node->curr = 0;
-    node->lengthR = DEFAULT;
-    node->lengthL = 0;
-    node->head = 0;
-    node->next = NULL;
-    currNode1 = node;
+    currNode1 = malloc(sizeof(nodeBfs));
+    currNode1->tape = malloc(sizeof(char)*DEFAULT);
+    memset(currNode1->tape, '_', DEFAULT);
+    currNode1->tape[DEFAULT] = '\0';
+    currNode1->head = DEFAULT/2;
+    currNode1->curr = 0;
+    currNode1->currState = 0;
+    currNode1->tape[currNode1->head] = line[currNode1->curr];
     while(level <= max){
-       printf("%d Level: \n", level);
+        
+       // printf("%d Level: \n", level);
         while(currNode1 != NULL){
             
             int accett = 0;
-            arc = arrayNode[currNode1->currState];
+            dir = arrayNode[currNode1->currState];
+            arc = dir->trans[dynamicAddr(currNode1->tape[currNode1->head])];
             
             while(arc != NULL){
                 
-                if(arc->toRead == currNode1->tape[currNode1->head]){
-                   
-                    if(loopChecker(arc, currNode1) == 1){
-                        loop = 1;
-                    }else   {
-                        //currNode1->tape[currNode1->length] = '\0';
-                        accett = 1;
-                        newTape = malloc(sizeof(char)*((currNode1->lengthR + currNode1->lengthL+1)));
-                        memcpy(newTape, currNode1->tape, sizeof(char)*((currNode1->lengthR + currNode1->lengthL)));
-                        newTape[currNode1->lengthR + currNode1->lengthL] = '\0';
-                        newLengthL = currNode1->lengthL;
-                        newLengthR = currNode1->lengthR;
-                        if(arc->move == 'R'){
-                            
-                            newCurr = currNode1->curr + 1;
-                            //   currNode1->tape[currNode1->length] = '\0';
-                            if(((currNode1->head)+1) == (newLengthR + newLengthL) ){ //strlen(line) < currNode1->curr
+                if(arc->toRead == '_' && (arc->move == 'L' || arc->move == 'R') && arc->first == arc->last){
+                    
+                    loop = 1;
+                    
+                }else{
+                    
+                    accett = 1;
+                    if(arc->next == NULL){
+                        
+                        newTape = currNode1->tape;
+                    
+                    }else{
+                        
+                        newTape = malloc(sizeof(char)*(strlen(currNode1->tape)));
+                        memcpy(newTape, currNode1->tape, strlen(currNode1->tape));
+                        newTape[strlen(currNode1->tape)] = '\0';
+                    }
+                    
+                    switch (arc->move) {
+                        case 'R':
+                            if((currNode1->head)+1 == strlen(newTape)){
                                 
-                               // printf("realloc destra \n");
-                                //newTape = exceedManager(newTape, arc->move, newCurr);
-                                newLengthR = newLengthR + DEFAULT;
-                                newTape = (char*)realloc(newTape, sizeof(char)*(newLengthR + newLengthL));
-                                for(int i = (currNode1->lengthR+newLengthL); i < (newLengthR+newLengthL); i++){
-                                    
-                                    newTape[i] = '\0';
-                                    
-                                    
-                                }
-                                // currNode1->tape[currNode1->head + 1 ] = '\0';
+                                newTape = tapeManager(arc->move, newTape);
+                                
                             }
-                            
-                            if(newTape[currNode1->head + 1 ] == '\0'){
+                            if(newTape[currNode1->head + 1 ] == '_'){
                                 
-                                if(newCurr >= strlen(line)){
+                                if(currNode1->curr+1 < strlen(line)){
                                     
-                                    newTape[currNode1->head+1] = '_';
-                                    
-                                }else {
-                                    
-                                    newTape[currNode1->head+1] = line[newCurr];
+                                    newTape[currNode1->head+1] = line[currNode1->curr+1];
+                                    newCurr = currNode1->curr +1;
                                     
                                 }
                             }
-                            
+                           
                             newTape[currNode1->head] = arc->toWrite;
                             newHead = currNode1->head + 1;
+                           
+                            break;
                             
-                            /* }else{
-                             
-                             newTape[currNode1->head] = arc->toWrite;
-                             newHead = currNode1->head + 1;
-                             
-                             }*/
+                        case 'L':
                             
-                        }else if(arc->move == 'L'){
+                            if(((currNode1->head)-1) < 0){
                             
-                            newCurr = currNode1->curr - 1;
-                            if(((currNode1->head)-1) < 0){ //strlen(line) < currNode1->curr
-                                
-                                
-                                // newTape = exceedManager(newTape, arc->move, currNode1->curr);
-                                newLengthL = newLengthL + DEFAULT;
-                                char *newString;
-                                newString = (char*)malloc(sizeof(char)*(newLengthR + newLengthL+1));
-                                memset(newString, 0, sizeof(char)*(newLengthR + newLengthL+1));
-                                for(int i = 0; i < DEFAULT; i++){
-                                    
-                                    newString[i] = '_';
-                                    
-                                    
-                                }
-                                newString = strcat(newString,newTape);
-                                newTape = (char*)realloc(newTape, sizeof(char)*(newLengthR + newLengthL));
-                                memcpy(newTape, newString, sizeof(char)*(newLengthR + newLengthL));
-                                free(newString);
-                                
-                                
+                                newTape = tapeManager(arc->move, newTape);
                                 newTape[currNode1->head + DEFAULT] = arc->toWrite;
                                 newHead = currNode1->head + DEFAULT - 1;
-                                
+                            
                             }else{
                                 
                                 
@@ -585,32 +488,37 @@ char bfsFun(){
                                 
                             }
                             
-                        }else{
+                            
+                            break;
+                            
+                        case 'S':
                             
                             newTape[currNode1->head] = arc->toWrite;
                             newHead = currNode1->head;
-                        }
-                         printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
-                        //   printf("lenght %d", newLength);
-                        //  printf(" Testa punta all'el: %d \n", newHead);
-                        if(headNode2 == NULL){
+                            break;
                             
-                            headNode2 = addCoda(newTape, newHead, arc->last, newCurr, newLengthR, newLengthL);
-                           // rimasti++;
-                            currNode2 = headNode2;
-                            
-                        }else{
-                            
-                            currNode2->next = addCoda(newTape, newHead, arc->last, newCurr, newLengthR, newLengthL);
-                          //  rimasti++;
-                            currNode2 = currNode2->next;
-                            
-                        }
+                        default:
+                            break;
+                    }
+                 //   printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
+                    if(headNode2 == NULL){
+                        
+                        headNode2 = addCoda(newTape, newHead, arc->last, newCurr);
+                        currNode2 = headNode2;
+                        
+                    }else{
+                        
+                        currNode2->next = addCoda(newTape, newHead, arc->last, newCurr);
+                        currNode2 = currNode2->next;
                         
                     }
+                    
                 }
+                
                 arc = arc->next;
+                
             }
+            
             if(accett == 0){
                 for(int i = 0; i < MAX; i++){
                     if(currNode1->currState == acc[i]){
@@ -628,9 +536,9 @@ char bfsFun(){
             currNode1 = currNode1->next;
             free(preNode1->tape);
             free(preNode1);
-          //  rimasti--;
             
         }
+        
         if(headNode2 == NULL){
             //   printf("RIMASTI: %d \n", rimasti);
             if(loop == 1){
@@ -646,27 +554,80 @@ char bfsFun(){
         preNode1 = NULL;
         currNode2 = NULL;
         level++;
+        
     }
     
     return res;
 }
-
-
-
-nodeList addCoda(char *newTape, int head, int state, int curr, int lengthR, int lengthL) {
     
+    
+nodeList addCoda(char *newTape, int head, int currState, int curr) {
+        
     nodeBfs *node;
     node = malloc(sizeof(nodeBfs));
-    node->currState = state;
-    node->lengthR = lengthR;
-    node->lengthL = lengthL;
-    //  newTape[length] = '\0';
-    node->tape = newTape; //(char*)malloc(sizeof(char)*strlen(newTape));
-    //memset(node->tape,0,strlen(newTape));
-    // memcpy(node->tape, newTape, sizeof(char)*strlen(newTape));
-    node->curr = curr;
+    node->tape = newTape;
     node->head = head;
     node->next = NULL;
-    
+    node->currState = currState;
     return node;
 }
+
+char *tapeManager(char move, char *tape){
+    
+    char *newString;
+    switch (move) {
+        case 'R':
+            newString = malloc(sizeof(char)*(strlen(tape)+DEFAULT));
+            memset(newString, '_', (strlen(tape)+DEFAULT));
+            memcpy(newString, tape, strlen(tape));
+            newString[strlen(newString)] = '\0';
+            free(tape);
+            return newString;
+            break;
+            
+        case 'L':
+            newString = malloc(sizeof(char)*(strlen(tape)+DEFAULT));
+            memset(newString, '_', DEFAULT-1);
+            newString = strcat(newString, tape);
+            newString[strlen(newString)] = '\0';
+            free(tape);
+            return newString;
+            break;
+            
+        default:
+            return tape;
+            break;
+    }
+    
+}
+
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
