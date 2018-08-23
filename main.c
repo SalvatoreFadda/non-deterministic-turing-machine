@@ -420,10 +420,11 @@ char bfsFun(){
     currNode1->head = DEFAULT/2;
     currNode1->curr = 0;
     currNode1->currState = 0;
+    currNode1->next = NULL;
     currNode1->tape[currNode1->head] = line[currNode1->curr];
     while(level <= max){
         
-       // printf("%d Level: \n", level);
+        printf("%d Level: \n", level);
         while(currNode1 != NULL){
             
             int accett = 0;
@@ -500,7 +501,7 @@ char bfsFun(){
                         default:
                             break;
                     }
-                 //   printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
+                    printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
                     if(headNode2 == NULL){
                         
                         headNode2 = addCoda(newTape, newHead, arc->last, newCurr);
@@ -569,6 +570,7 @@ nodeList addCoda(char *newTape, int head, int currState, int curr) {
     node->head = head;
     node->next = NULL;
     node->currState = currState;
+    node->curr = curr;
     return node;
 }
 
@@ -579,8 +581,8 @@ char *tapeManager(char move, char *tape){
         case 'R':
             newString = malloc(sizeof(char)*(strlen(tape)+DEFAULT)+1);
             memset(newString, '_', (strlen(tape)+DEFAULT));
+            newString[strlen(tape)] = '\0';
             memcpy(newString, tape, strlen(tape));
-            newString[strlen(newString)] = '\0';
             //free(tape);
             return newString;
             break;
