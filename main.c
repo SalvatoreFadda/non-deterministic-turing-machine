@@ -11,10 +11,10 @@
 #include <string.h>
 
 #define MAX  2000
-#define MAXB 50
+#define MAXB 100
 #define MAXS 20000
 #define MAXN 10000
-#define DEFAULT 512
+#define DEFAULT 5
 #define ALPHA 63
 
 
@@ -316,7 +316,7 @@ char bfsFun(){
                             if((bfsQueue[head]->head)+1 == newLength){
                                 //    printf(" %d \n", newLength);
                                 newTape = tapeManager(arc->move, newTape, newLength);
-                                newLength = newLength + DEFAULT;
+                                newLength = newLength*2;
                                 
                             }
                             if(newTape[bfsQueue[head]->head + 1 ] == '\0'){
@@ -344,9 +344,9 @@ char bfsFun(){
                             if(((bfsQueue[head]->head)-1) < 0){
                                 
                                 newTape = tapeManager(arc->move, newTape, newLength);
-                                newTape[bfsQueue[head]->head + DEFAULT] = arc->toWrite;
-                                newHead = bfsQueue[head]->head + DEFAULT - 1;
-                                newLength = newLength + DEFAULT;
+                                newTape[bfsQueue[head]->head + newLength] = arc->toWrite;
+                                newHead = bfsQueue[head]->head + (newLength -1);
+                                newLength = newLength*2;
                                 
                             }else{
                                 
@@ -368,7 +368,7 @@ char bfsFun(){
                         default:
                             break;
                     }
-                   // printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
+                    //printf("%s Tape da %d, a %d  \n", newTape, arc->first, arc->last);
                     // printf("lenght %d", newLength);
                     // printf(" Testa punta all'el: %d \n", newHead);
                     enque(newTape, newHead, arc->last, newCurr, newLength, bfsQueue[head]->level+1);
@@ -479,21 +479,32 @@ char *tapeManager(char move, char *tape, int length){
     switch (move) {
         case 'R':
             // printf("%c \n", move);
-            newString = malloc(sizeof(char)*(length+DEFAULT)+1);
-            memset(newString, 0, (length+DEFAULT+1));
-            memcpy(newString, tape, length);
+            tape = realloc(tape, sizeof(char)*((length*2)+1));
+            //memset(newString, 0, (length+DEFAULT+1));
+            //memcpy(newString, tape, length);
             //free(tape);
-            return newString;
+            for(int i = length; i < (length*2+1); i++){
+                
+                tape[i] = '\0';
+                
+            }
+            return tape;
             break;
             
         case 'L':
             //printf("%c \n", move);
-            newString = malloc(sizeof(char)*(length+DEFAULT+1));
-            memset(newString, '_', DEFAULT);
+            newString = malloc(sizeof(char)*((length*2)+1));
+            for(int i = 0; i < (length); i++){
+                
+                newString[i] = '_';
+                
+            }
             newString = strcat(newString, tape);
-            newString[strlen(newString)] = '\0';
-            //free(tape);
-            return newString;
+            tape = realloc(tape, sizeof(char)*((length*2)+1));
+            memcpy(tape, newString, sizeof(char)*((length*2)));
+            tape[strlen(tape)] = '\0';
+            free(newString);
+            return tape;
             break;
             
         default:
