@@ -494,6 +494,7 @@ char *tapeManager(char move, char *tape, int length){
         case 'L':
             //printf("%c \n", move);
             newString = malloc(sizeof(char)*((length*2)+1));
+            memset(newString, 0, (length+DEFAULT+1));
             for(int i = 0; i < (length); i++){
                 
                 newString[i] = '_';
