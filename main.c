@@ -503,7 +503,7 @@ char *tapeManager(char move, char *tape, int length){
             newString = strcat(newString, tape);
             tape = realloc(tape, sizeof(char)*((length*2)+1));
             memcpy(tape, newString, sizeof(char)*((length*2)));
-            tape[strlen(tape)] = '\0';
+            tape[strlen(newString)] = '\0';
             free(newString);
             return tape;
             break;
