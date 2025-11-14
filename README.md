@@ -1,38 +1,14 @@
-# MTU Implementation in C
+# MTU - Simulatore Macchina di Turing Non Deterministica
 
-Path MTU Discovery implementation for bachelor's degree networking course.
+Simulatore di Macchina di Turing non deterministica a nastro singolo in C standard (libc).
 
-## What is MTU?
+**Corso**: Prova Finale di Algoritmi e Strutture Dati - Politecnico di Milano
 
-Maximum Transmission Unit - the largest packet size that can be transmitted without fragmentation. Standard Ethernet MTU is 1500 bytes.
+## Implementazione
 
-## Build
-
-```bash
-make
-# or
-gcc -o mtu src/*.c -I include -Wall
-```
-
-## Usage
-
-```bash
-sudo ./mtu 
-```
-
-Requires root for raw socket operations.
-
-## Implementation
-
-- Path MTU Discovery using ICMP echo requests
-- Binary search algorithm to find optimal MTU
-- Raw socket programming in C
-- Don't Fragment (DF) bit handling
-
-## References
-
-- [RFC 1191 - Path MTU Discovery](https://tools.ietf.org/html/rfc1191)
-- Stevens, "TCP/IP Illustrated, Vol. 1"
+- Simulazione non deterministica tramite esplorazione BFS delle configurazioni
+- Gestione efficiente memoria per nastro dinamico
+- Strutture dati ottimizzate per performance su test pubblici/privati
 
 ## Author
 
