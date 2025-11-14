@@ -8,7 +8,6 @@ Simulatore di Macchina di Turing non deterministica a nastro singolo in C standa
 
 - Simulazione non deterministica tramite esplorazione BFS delle configurazioni
 - Gestione efficiente memoria per nastro dinamico
-- Strutture dati ottimizzate per performance su test pubblici/privati
 
 ## Author
 
