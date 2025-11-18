@@ -1,13 +1,13 @@
-# MTU - Simulatore Macchina di Turing Non Deterministica
+# MTU - Non-Deterministic Turing Machine Simulator
 
-Simulatore di Macchina di Turing non deterministica a nastro singolo in C standard (libc).
+Non-deterministic single-tape Turing Machine simulator in standard C (libc).
 
-**Corso**: Prova Finale di Algoritmi e Strutture Dati - Politecnico di Milano
+**Course**: Final Project for Algorithms and Data Structures - Politecnico di Milano
 
 ## Implementazione
 
-- Simulazione non deterministica tramite esplorazione BFS delle configurazioni
-- Gestione efficiente memoria per nastro dinamico
+- Non-deterministic simulation through BFS exploration of configurations
+- Efficient memory management for dynamic tape
 
 ## Author
 
